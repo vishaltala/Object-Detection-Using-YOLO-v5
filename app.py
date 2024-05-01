@@ -1,11 +1,3 @@
-from ObjectDetection.pipeline.training_pipeline import TrainPipeline
-
-obj = TrainPipeline()
-obj.run_pipeline()
-
-
-
-'''
 import sys,os
 from ObjectDetection.pipeline.training_pipeline import TrainPipeline
 from ObjectDetection.utils.main_utils import decodeImage, encodeImageIntoBase64
@@ -75,10 +67,6 @@ def predictLive():
         return Response("Value not found inside  json data")
     
 
-
-
 if __name__ == "__main__":
     clApp = ClientApp()
     app.run(host=APP_HOST, port=APP_PORT)
-
-'''
