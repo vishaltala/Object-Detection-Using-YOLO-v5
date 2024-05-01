@@ -3,13 +3,7 @@ import shutil
 from ObjectDetection.logger import logging
 from ObjectDetection.exception import AppException
 from ObjectDetection.entity.config_entity import DataValidationConfig
-from ObjectDetection.entity.artifacts_entity import (DataIngestionArtifact,
-                                                 DataValidationArtifact)
-
-
-
-
-
+from ObjectDetection.entity.artifacts_entity import (DataIngestionArtifact, DataValidationArtifact)
 
 class DataValidation:
     def __init__(
@@ -24,9 +18,7 @@ class DataValidation:
         except Exception as e:
             raise AppException(e, sys) 
         
-
-
-    
+   
     def validate_all_files_exist(self)-> bool:
         try:
             validation_status = None
@@ -51,9 +43,6 @@ class DataValidation:
         except Exception as e:
             raise AppException(e, sys)
         
-
-
-    
     def initiate_data_validation(self) -> DataValidationArtifact: 
         logging.info("Entered initiate_data_validation method of DataValidation class")
         try:
@@ -71,4 +60,3 @@ class DataValidation:
 
         except Exception as e:
             raise AppException(e, sys)
-        
