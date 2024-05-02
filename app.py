@@ -21,7 +21,6 @@ def trainRoute():
     obj.run_pipeline()
     return "Training Successfull!!" 
 
-
 @app.route("/")
 def home():
     return render_template("index.html")
