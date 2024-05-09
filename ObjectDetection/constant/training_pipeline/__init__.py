@@ -7,7 +7,7 @@ DATA_INGESTION_DIR_NAME: str = "data_ingestion"
 
 DATA_INGESTION_FEATURE_STORE_DIR: str = "feature_store"
 
-DATA_DOWNLOAD_URL: str = "https://drive.google.com/file/d/1E3XqSl0XjUlEqNpcMza_Xe2vKGLIRsep/view?usp=sharing"
+DATA_DOWNLOAD_URL: str = "https://drive.google.com/file/d/1WM_il2uRz1L2ur3MD0BXFINHNLvkXX2X/view?usp=sharing"
 
 """
 Data Validation realted contant start with DATA_VALIDATION VAR NAME
