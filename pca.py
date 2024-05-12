@@ -53,13 +53,15 @@ image = cv2.imread(image_path)
 # Apply watershed and get border points
 result, border_points = apply_watershed(image)
 
+B = image.shape[1]
+transformed_coordinates = [(B - x, y) for (x, y) in border_points]
+
 output_path = "yolov5/runs/detect/exp/border_1.jpg"
 cv2.imwrite(output_path, result)
 print("Image saved at:", output_path)
 
 # Swap the x and y coordinates using slicing
-points_swapped = np.array(border_points)
-points = points_swapped[:, [1, 0]]
+points = np.array(transformed_coordinates)
 
 # Fit PCA
 pca = PCA(n_components=2)
@@ -75,12 +77,11 @@ center_point = np.mean(points, axis=0)
 plt.figure(figsize=(8, 6))
 plt.scatter(points[:, 0], points[:, 1], alpha=0.7)
 for length, vector in zip(pca.explained_variance_, pca.components_):
-    v = vector * 3 * np.sqrt(length)  # Scale vector by 3 times the sqrt of its eigenvalue for visibility
+    v = vector * np.sqrt(length)  # Scale vector with the sqrt of its eigenvalue for visibility
     plt.quiver(center_point[0], center_point[1], v[0], v[1], angles='xy', scale_units='xy', scale=1, color='r')
-
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
-plt.title('PCA on Swapped Points')
+plt.title('PCA')
 plt.axis('equal')
 plt.grid(True)
 
@@ -89,5 +90,5 @@ plt.savefig('yolov5/runs/detect/exp/path_swapped.jpg', format='jpg', dpi=300)
 plt.close()
 
 # Print PCA components and explained variance
-print("Principal components:\n", pca.components_)
-print("Explained variance ratio:\n", pca.explained_variance_ratio_)
+#print("Principal components:\n", pca.components_)
+#print("Explained variance ratio:\n", pca.explained_variance_ratio_)
