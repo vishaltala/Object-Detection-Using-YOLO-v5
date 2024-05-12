@@ -66,14 +66,7 @@ random_border_points = pick_random_points(border_points, 500)
 for point in random_border_points:
     cv2.circle(result, tuple(point[::-1]), 5, (0, 255, 255), -1)  # Draw in yellow
 
-# Display the results
-plt.figure(figsize=(10, 5))
-plt.subplot(121)
-plt.imshow(cv2.cvtColor(image, cv2.COLOR_BGR2RGB))
-plt.title('Original Image')
-plt.axis('off')
-
-plt.subplot(122)
+plt.subplot()
 plt.imshow(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
 plt.title('Filtered Border Points')
 plt.axis('off')

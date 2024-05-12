@@ -2,7 +2,6 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-import random
 
 def apply_watershed(image):
     # Convert to grayscale
@@ -47,40 +46,20 @@ def apply_watershed(image):
     
     return image, filtered_border_points
 
-def pick_random_points(points, num_points=50):
-    if len(points) < num_points:
-        print(f"Warning: Requested {num_points} points, but only {len(points)} are available.")
-        num_points = len(points)
-    return random.sample(points, num_points)
-
 # Load the image from your specified path
-image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
+image_path = 'yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
 image = cv2.imread(image_path)
 
 # Apply watershed and get border points
 result, border_points = apply_watershed(image)
 
-# Pick 500 random points from the border
-random_border_points = pick_random_points(border_points, 500)
+output_path = "yolov5/runs/detect/exp/border_1.jpg"
+cv2.imwrite(output_path, result)
+print("Image saved at:", output_path)
 
-# Draw the random points on the image
-for point in random_border_points:
-    cv2.circle(result, tuple(point[::-1]), 5, (0, 255, 255), -1)  # Draw in yellow
-
-plt.subplot(122)
-plt.imshow(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
-plt.title('Filtered Border Points')
-plt.axis('off')
-plt.show()
-
-# Print the random points
-print("Random Border Points:")
-point_list = []
-for point in random_border_points:
-    point_list.append(point)
-#print(point_list)
-
-points = np.array(point_list)
+# Swap the x and y coordinates using slicing
+points_swapped = np.array(border_points)
+points = points_swapped[:, [1, 0]]
 
 # Fit PCA
 pca = PCA(n_components=2)
@@ -101,10 +80,13 @@ for length, vector in zip(pca.explained_variance_, pca.components_):
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
-plt.title('PCA on Points')
+plt.title('PCA on Swapped Points')
 plt.axis('equal')
 plt.grid(True)
-plt.show()
+
+# Save the figure to a file and close the plot
+plt.savefig('yolov5/runs/detect/exp/path_swapped.jpg', format='jpg', dpi=300)
+plt.close()
 
 # Print PCA components and explained variance
 print("Principal components:\n", pca.components_)
