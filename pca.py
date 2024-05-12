@@ -1,50 +1,111 @@
 import cv2
 import numpy as np
+import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import random
 
-def draw_principal_axis(image, points):
-    # Apply PCA to find the direction of maximum variance
-    pca = PCA(n_components=2)
-    pca.fit(points)
+def apply_watershed(image):
+    # Convert to grayscale
+    gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
+    
+    # Apply binary thresholding
+    _, thresh = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY_INV + cv2.THRESH_OTSU)
+    
+    # Noise removal using morphological opening
+    kernel = np.ones((3, 3), np.uint8)
+    opening = cv2.morphologyEx(thresh, cv2.MORPH_OPEN, kernel, iterations=2)
+    
+    # Sure background area using dilation
+    sure_bg = cv2.dilate(opening, kernel, iterations=3)
+    
+    # Finding sure foreground area using distance transform
+    dist_transform = cv2.distanceTransform(opening, cv2.DIST_L2, 5)
+    _, sure_fg = cv2.threshold(dist_transform, 0.7 * dist_transform.max(), 255, 0)
+    
+    # Finding unknown region
+    sure_fg = np.uint8(sure_fg)
+    unknown = cv2.subtract(sure_bg, sure_fg)
+    
+    # Marker labelling
+    _, markers = cv2.connectedComponents(sure_fg)
+    
+    # Add one to all labels so that sure background is not 0, but 1
+    markers = markers + 1
+    
+    # Now, mark the region of unknown with zero
+    markers[unknown == 255] = 0
+    
+    # Apply watershed
+    markers = cv2.watershed(image, markers)
+    image[markers == -1] = [255, 0, 0]  # Marking boundaries in red
 
-    # First principal component
-    center = np.mean(points, axis=0)
-    first_pc = pca.components_[0] * np.sqrt(pca.explained_variance_[0]) * 100  # Scale for visibility
+    # Extracting border points, excluding edges near the image boundary
+    height, width = image.shape[:2]
+    margin = 10  # Margin to exclude near the image edges
+    border_points = np.column_stack(np.where(markers == -1))
+    filtered_border_points = [pt for pt in border_points if margin < pt[0] < height - margin and margin < pt[1] < width - margin]
+    
+    return image, filtered_border_points
 
-    # Calculate the start and end points for the principal axis
-    start_point = tuple(np.int32(center + first_pc))
-    end_point = tuple(np.int32(center - first_pc))
+def pick_random_points(points, num_points=50):
+    if len(points) < num_points:
+        print(f"Warning: Requested {num_points} points, but only {len(points)} are available.")
+        num_points = len(points)
+    return random.sample(points, num_points)
 
-    # Draw the principal axis
-    cv2.arrowedLine(image, start_point, end_point, (0, 0, 255), 5)  # Red arrow line
-
-    return image
-
-# Load the image from specified path
-image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Box/photo_1.jpg'
+# Load the image from your specified path
+image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
 image = cv2.imread(image_path)
 
-# Provided coordinates
-points = np.array([
-    [506, 542], [34, 279], [514, 539], [563, 204], [36, 137], [553, 154], [266, 43], [79, 84],
-    [574, 276], [129, 573], [27, 409], [183, 55], [473, 35], [397, 565], [391, 34], [583, 396],
-    [534, 81], [436, 30], [512, 540], [425, 31], [41, 357], [23, 402], [530, 69], [370, 35],
-    [25, 404], [288, 579], [44, 380], [40, 127], [57, 441], [324, 575], [139, 64], [581, 457],
-    [275, 42], [34, 294], [155, 581], [165, 582], [570, 249], [562, 197], [240, 46], [140, 64],
-    [585, 73], [528, 66], [294, 40], [31, 192], [583, 430], [108, 72], [39, 346], [54, 437],
-    [389, 34], [370, 569], [170, 58], [60, 462], [519, 47], [180, 56], [487, 547], [420, 34],
-    [305, 39], [32, 421], [573, 273], [43, 366], [31, 189], [335, 37], [582, 453], [355, 35],
-    [381, 34], [31, 170], [569, 242], [546, 123], [566, 224], [69, 501], [475, 550], [401, 33],
-    [108, 561], [31, 164], [193, 53], [52, 423], [187, 582], [578, 316], [361, 35], [68, 92],
-    [366, 570], [213, 50], [159, 60], [272, 42], [105, 559], [565, 213], [127, 67], [438, 558],
-    [267, 43], [557, 175], [330, 574], [477, 35], [34, 283], [224, 582], [37, 319], [91, 546],
-    [505, 38], [69, 91], [184, 583], [503, 543]
-])
+# Apply watershed and get border points
+result, border_points = apply_watershed(image)
 
-# Draw the principal axis on the image
-result_with_axis = draw_principal_axis(image, points)
+# Pick 500 random points from the border
+random_border_points = pick_random_points(border_points, 500)
 
-# Using OpenCV to display the image
-cv2.imshow('Image with Principal Axis', result_with_axis)
-cv2.waitKey(0)
-cv2.destroyAllWindows()
+# Draw the random points on the image
+for point in random_border_points:
+    cv2.circle(result, tuple(point[::-1]), 5, (0, 255, 255), -1)  # Draw in yellow
+
+plt.subplot(122)
+plt.imshow(cv2.cvtColor(result, cv2.COLOR_BGR2RGB))
+plt.title('Filtered Border Points')
+plt.axis('off')
+plt.show()
+
+# Print the random points
+print("Random Border Points:")
+point_list = []
+for point in random_border_points:
+    point_list.append(point)
+#print(point_list)
+
+points = np.array(point_list)
+
+# Fit PCA
+pca = PCA(n_components=2)
+pca.fit(points)
+
+# First principal component
+first_pc = pca.components_[0]
+
+# Center of all points (mean)
+center_point = np.mean(points, axis=0)
+
+# Plotting the points and the principal component
+plt.figure(figsize=(8, 6))
+plt.scatter(points[:, 0], points[:, 1], alpha=0.7)
+for length, vector in zip(pca.explained_variance_, pca.components_):
+    v = vector * 3 * np.sqrt(length)  # Scale vector by 3 times the sqrt of its eigenvalue for visibility
+    plt.quiver(center_point[0], center_point[1], v[0], v[1], angles='xy', scale_units='xy', scale=1, color='r')
+
+plt.xlabel('X Coordinate')
+plt.ylabel('Y Coordinate')
+plt.title('PCA on Points')
+plt.axis('equal')
+plt.grid(True)
+plt.show()
+
+# Print PCA components and explained variance
+print("Principal components:\n", pca.components_)
+print("Explained variance ratio:\n", pca.explained_variance_ratio_)

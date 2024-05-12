@@ -46,21 +46,21 @@ def apply_watershed(image):
     
     return image, filtered_border_points
 
-def pick_random_points(points, num_points=20):
+def pick_random_points(points, num_points=500):
     if len(points) < num_points:
         print(f"Warning: Requested {num_points} points, but only {len(points)} are available.")
         num_points = len(points)
     return random.sample(points, num_points)
 
 # Load the image from your specified path
-image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Box/photo_1.jpg'
+image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
 image = cv2.imread(image_path)
 
 # Apply watershed and get border points
 result, border_points = apply_watershed(image)
 
-# Pick 20 random points from the border
-random_border_points = pick_random_points(border_points, 100)
+# Pick 500 random points from the border
+random_border_points = pick_random_points(border_points, 500)
 
 # Draw the random points on the image
 for point in random_border_points:
