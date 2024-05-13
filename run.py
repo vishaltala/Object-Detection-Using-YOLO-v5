@@ -43,7 +43,7 @@ def take_photos_and_run_detection(camera_index=0, save_directory='photos', detec
                 '--weights', weights,
                 '--img', '416',
                 '--save-txt', '--save-crop',
-                '--conf', '0.85',
+                '--conf', '0.90',
                 '--source', photo_path
             ]
             try:

@@ -42,19 +42,20 @@ def apply_watershed(image):
     height, width = image.shape[:2]
     margin = 10  # Margin to exclude near the image edges
     border_points = np.column_stack(np.where(markers == -1))
-    filtered_border_points = [pt for pt in border_points if margin < pt[0] < height - margin and margin < pt[1] < width - margin]
+    filtered_border_points = [(pt[1], height - pt[0] - 1) for pt in border_points if margin < pt[0] < height - margin and margin < pt[1] < width - margin]
     
     return image, filtered_border_points
 
 # Load the image from your specified path
-image_path = 'yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
+image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
 image = cv2.imread(image_path)
 
 # Apply watershed and get border points
 result, border_points = apply_watershed(image)
 
 B = image.shape[1]
-transformed_coordinates = [(B - x, y) for (x, y) in border_points]
+H = image.shape[0]
+transformed_coordinates = [(x, y) for (x, y) in border_points]
 
 output_path = "yolov5/runs/detect/exp/border_1.jpg"
 cv2.imwrite(output_path, result)
@@ -76,9 +77,12 @@ center_point = np.mean(points, axis=0)
 # Plotting the points and the principal component
 plt.figure(figsize=(8, 6))
 plt.scatter(points[:, 0], points[:, 1], alpha=0.7)
+
 for length, vector in zip(pca.explained_variance_, pca.components_):
     v = vector * np.sqrt(length)  # Scale vector with the sqrt of its eigenvalue for visibility
     plt.quiver(center_point[0], center_point[1], v[0], v[1], angles='xy', scale_units='xy', scale=1, color='r')
+
+
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
 plt.title('PCA')
@@ -88,7 +92,3 @@ plt.grid(True)
 # Save the figure to a file and close the plot
 plt.savefig('yolov5/runs/detect/exp/path_swapped.jpg', format='jpg', dpi=300)
 plt.close()
-
-# Print PCA components and explained variance
-#print("Principal components:\n", pca.components_)
-#print("Explained variance ratio:\n", pca.explained_variance_ratio_)
