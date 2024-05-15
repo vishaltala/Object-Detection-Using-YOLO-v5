@@ -1,35 +1,41 @@
 import cv2
 import numpy as np
 
-# Load the image
-image_path = "/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/photo_1.jpg"
+def draw_arrows(image, origin, length1, angle1, length2, angle2):
+    # Convert angles from degrees to radians
+    angle1_rad = np.deg2rad(angle1)
+    angle2_rad = np.deg2rad(angle2)
+    
+    # Calculate the end points for each arrow
+    end1 = (int(origin[0] + length1 * np.cos(angle1_rad)), int(origin[1] - length1 * np.sin(angle1_rad)))
+    end2 = (int(origin[0] + length2 * np.cos(angle2_rad)), int(origin[1] - length2 * np.sin(angle2_rad)))
+    
+    # Draw the arrows
+    cv2.arrowedLine(image, origin, end1, (255, 0, 0), 3)  # Blue arrow
+    cv2.arrowedLine(image, origin, end2, (0, 255, 0), 3)  # Green arrow
+    
+    return image
+
+# Load an existing image
+image_path = 'path_to_your_image.jpg'  # Replace with your image path
 image = cv2.imread(image_path)
 
-# Check if image is loaded
+# If the image is not found, raise an error
 if image is None:
-    print("Error: Image not found.")
-else:
-    # Origin coordinates
-    x, y = 622, 555
+    raise FileNotFoundError("The specified image path does not exist or the image could not be loaded.")
 
-    # Calculate the end point of the first arrow (100 degrees from x-axis)
-    length = 200
-    angle_radians = np.radians(100)
-    x_end = int(x + length * np.cos(angle_radians))
-    y_end = int(y - length * np.sin(angle_radians))  # negative because y coordinates are inverted in images
+# Define parameters
+origin = (250, 250)  # Modify as needed
+length1 = 150
+angle1 = 45  # Degrees
+length2 = 100
+angle2 = 120  # Degrees
 
-    # Draw the first arrow
-    cv2.arrowedLine(image, (x, y), (x_end, y_end), (0, 255, 0), thickness=2, tipLength=0.3)
+# Draw the arrows on the image
+image_with_arrows = draw_arrows(image, origin, length1, angle1, length2, angle2)
 
-    # Calculate the end point of the second arrow (perpendicular i.e., 100 + 90 = 190 degrees)
-    angle_radians_perp = np.radians(190)
-    x_end_perp = int(x + length * np.cos(angle_radians_perp))
-    y_end_perp = int(y - length * np.sin(angle_radians_perp))
+# Save the image to a desired path
+save_path = 'path_to_save_image.jpg'  # Replace with your desired save path
+cv2.imwrite(save_path, image_with_arrows)
 
-    # Draw the second arrow
-    cv2.arrowedLine(image, (x, y), (x_end_perp, y_end_perp), (255, 0, 0), thickness=2, tipLength=0.3)
-
-    # Save the modified image
-    output_path = "/Users/vishaltala/Desktop/modified_photo_1.jpg"
-    cv2.imwrite(output_path, image)
-    print("Image saved at:", output_path)
+print(f"Image saved successfully at {save_path}")

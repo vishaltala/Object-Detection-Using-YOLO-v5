@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
+import os
 
 def apply_watershed(image):
     # Convert to grayscale
@@ -47,22 +48,27 @@ def apply_watershed(image):
     return image, filtered_border_points
 
 # Load the image from your specified path
-image_path = '/Users/vishaltala/Desktop/Thesis/Codes/Object-Detection-Using-YOLO-v5/yolov5/runs/detect/exp/crops/Cylinder/photo_1.jpg'
+def read_path():
+    with open("file_path.txt", "r") as file:
+        return file.read()
+    
+image_path = read_path()
 image = cv2.imread(image_path)
 
 # Apply watershed and get border points
 result, border_points = apply_watershed(image)
 
-B = image.shape[1]
-H = image.shape[0]
-transformed_coordinates = [(x, y) for (x, y) in border_points]
+# Define Path for saving the file
+parts = image_path.split('/')
+border_parts = parts[:-3]
+border_parts.append('border_1.jpg')
+output_path = '/'.join(border_parts)
 
-output_path = "yolov5/runs/detect/exp/border_1.jpg"
 cv2.imwrite(output_path, result)
 print("Image saved at:", output_path)
 
 # Swap the x and y coordinates using slicing
-points = np.array(transformed_coordinates)
+points = np.array(border_points)
 
 # Fit PCA
 pca = PCA(n_components=2)
@@ -80,8 +86,8 @@ plt.scatter(points[:, 0], points[:, 1], alpha=0.7)
 
 for length, vector in zip(pca.explained_variance_, pca.components_):
     v = vector * np.sqrt(length)  # Scale vector with the sqrt of its eigenvalue for visibility
+    print(v)
     plt.quiver(center_point[0], center_point[1], v[0], v[1], angles='xy', scale_units='xy', scale=1, color='r')
-
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')
@@ -89,6 +95,13 @@ plt.title('PCA')
 plt.axis('equal')
 plt.grid(True)
 
+pca_parts = parts[:-3]
+pca_parts.append('pca_1.jpg')
+output_path = '/'.join(pca_parts)
+
 # Save the figure to a file and close the plot
-plt.savefig('yolov5/runs/detect/exp/path_swapped.jpg', format='jpg', dpi=300)
+plt.savefig(output_path, format='jpg', dpi=300)
 plt.close()
+
+# Delete the file after reading
+os.remove("file_path.txt")
