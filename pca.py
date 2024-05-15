@@ -2,9 +2,9 @@ import cv2
 import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.decomposition import PCA
-import os
 
-def apply_watershed(image):
+
+def apply_watershed(image, margin=10):
     # Convert to grayscale
     gray = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     
@@ -37,8 +37,16 @@ def apply_watershed(image):
     
     # Apply watershed
     markers = cv2.watershed(image, markers)
-    image[markers == -1] = [255, 0, 0]  # Marking boundaries in red
-
+    
+    # Create a mask to ignore boundaries near the edges
+    height, width = image.shape[:2]
+    
+    # Drawing only valid boundaries away from the edge
+    for y in range(margin, height - margin):
+        for x in range(margin, width - margin):
+            if markers[y, x] == -1:
+                cv2.circle(image, (x, y), 2, [0, 255, 0], -1)  # Mark boundary in green, change 2 to desired thickness
+    
     # Extracting border points, excluding edges near the image boundary
     height, width = image.shape[:2]
     margin = 10  # Margin to exclude near the image edges
@@ -104,4 +112,4 @@ plt.savefig(output_path, format='jpg', dpi=300)
 plt.close()
 
 # Delete the file after reading
-os.remove("file_path.txt")
+#os.remove("file_path.txt")
