@@ -12,9 +12,6 @@ if __name__ == "__main__":
     # Run detection.py
     run_script('detection.py')
     
-    # Wait for 15 seconds
-    time.sleep(15)
-    
     # Run pca.py
     run_script('pca.py')
     
