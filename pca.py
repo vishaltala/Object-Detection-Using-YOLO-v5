@@ -57,7 +57,7 @@ def apply_watershed(image, margin=10):
 
 # Load the image from your specified path
 def read_path():
-    with open("file_path.txt", "r") as file:
+    with open("txt_file/crop_img_path.txt", "r") as file:
         return file.read()
     
 image_path = read_path()
@@ -73,7 +73,6 @@ border_parts.append('border_1.jpg')
 output_path = '/'.join(border_parts)
 
 cv2.imwrite(output_path, result)
-print("Image saved at:", output_path)
 
 # Swap the x and y coordinates using slicing
 points = np.array(border_points)
@@ -92,10 +91,17 @@ center_point = np.mean(points, axis=0)
 plt.figure(figsize=(8, 6))
 plt.scatter(points[:, 0], points[:, 1], alpha=0.7)
 
+vectors = []
+
 for length, vector in zip(pca.explained_variance_, pca.components_):
-    v = vector * np.sqrt(length)  # Scale vector with the sqrt of its eigenvalue for visibility
-    print(v)
+    v = vector * np.sqrt(length)
+    vectors.append(v)
     plt.quiver(center_point[0], center_point[1], v[0], v[1], angles='xy', scale_units='xy', scale=1, color='r')
+
+# Write the vectors to a text file
+with open('txt_file/vectors.txt', 'w') as f:
+    for vector in vectors:
+        f.write(f"{vector}\n")
 
 plt.xlabel('X Coordinate')
 plt.ylabel('Y Coordinate')

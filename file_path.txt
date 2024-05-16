@@ -1,1 +1,0 @@
-yolov5/runs/detect/exp2/crops/Box/photo_1.jpg
