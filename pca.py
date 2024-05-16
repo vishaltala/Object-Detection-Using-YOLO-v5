@@ -73,6 +73,7 @@ border_parts.append('border_1.jpg')
 output_path = '/'.join(border_parts)
 
 cv2.imwrite(output_path, result)
+print(f"Image with detected border saved successfully at {output_path}")
 
 # Swap the x and y coordinates using slicing
 points = np.array(border_points)
@@ -115,7 +116,5 @@ output_path = '/'.join(pca_parts)
 
 # Save the figure to a file and close the plot
 plt.savefig(output_path, format='jpg', dpi=300)
+print(f"PCA plot with direction saved successfully at {output_path}")
 plt.close()
-
-# Delete the file after reading
-#os.remove("file_path.txt")

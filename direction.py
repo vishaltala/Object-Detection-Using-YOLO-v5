@@ -20,12 +20,12 @@ def draw_arrows(image, origin, length1, angle1, length2, angle2):
         file.write(f"Length 2: {length2}\n")    
         file.write(f"Angle 1: {angle1}\n")
         file.write(f"Angle 2: {angle2}\n")
-        
+
     # Convert origin to integer
     origin = (int(origin[0]), int(origin[1]))
 
     # Draw the arrows
-    cv2.arrowedLine(image, origin, end1, (255, 0, 0), 3)  # Blue arrow
+    cv2.arrowedLine(image, origin, end1, (0, 0, 255), 3)  # Red arrow
     cv2.arrowedLine(image, origin, end2, (0, 255, 0), 3)  # Green arrow
     
     return image
@@ -128,4 +128,4 @@ output_path = '/'.join(border_parts)
 # Save the image to a desired path
 cv2.imwrite(output_path, image_with_arrows)
 
-print(f"Image with direction saved successfully at {output_path}")
+print(f"Image with detected direction saved successfully at {output_path}")
