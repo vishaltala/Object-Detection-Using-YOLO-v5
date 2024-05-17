@@ -1,5 +1,4 @@
 import subprocess
-import time
 
 def run_script(script_name):
     try:
