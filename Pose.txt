@@ -9,7 +9,14 @@ Cylinder:
 Z = 53 mm
 Z for Release = 60 mm
 
-Z for Marker: 22 mm
+Marker:
+Z = 22 mm
+Z for Release = 30 mm
+
+Box:
+Z = 22 mm
+Z for Release = 30 mm
+
 
 
 

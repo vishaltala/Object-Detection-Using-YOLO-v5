@@ -10,7 +10,7 @@ def send_urscript(script, host):
 # URScript file content
 urscript = """
 def move_to_position():
-    movel(p[0.400, 0.070, 0.035, 2.221, 2.221, 0.0], a=0.1, v=0.10)
+    movej(p[-0.37221, -0.01232, 0.55941, 2.944, -1.163, 0.023], a=0.1, v=0.10)
     textmsg("Movement complete!")
 end
 
