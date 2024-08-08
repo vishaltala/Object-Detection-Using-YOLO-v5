@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import math
+from scipy.spatial.transform import Rotation as R
 
 def draw_arrows(image, origin, length1, angle1, length2, angle2):
     
@@ -8,6 +9,19 @@ def draw_arrows(image, origin, length1, angle1, length2, angle2):
     angle1_rad = np.deg2rad(angle1)
     angle2_rad = np.deg2rad(angle2)
     
+    # Step 1: Convert RPY angles from degrees to radians
+    rpy_degrees = [180, 0, angle1]
+    rpy_radians = np.deg2rad(rpy_degrees)
+
+    # Step 2: Convert RPY (roll, pitch, yaw) to a rotation matrix
+    rotation_matrix = R.from_euler('xyz', rpy_radians).as_matrix()
+
+    # Step 3: Convert the rotation matrix to a rotational vector (axis-angle representation)
+    rot_vec = R.from_matrix(rotation_matrix).as_rotvec()
+
+    # Step 4: Round the rotational vector to four decimal places
+    rot_vec_rounded = np.round(rot_vec, 3)
+
     # Calculate the end points for each arrow
     end1 = (int(origin[0] + length1 * np.cos(angle1_rad)), int(origin[1] - length1 * np.sin(angle1_rad)))
     end2 = (int(origin[0] + length2 * np.cos(angle2_rad)), int(origin[1] - length2 * np.sin(angle2_rad)))
@@ -17,12 +31,13 @@ def draw_arrows(image, origin, length1, angle1, length2, angle2):
     with open("txt_file/direction.txt", "w") as file:
         file.write(f"Origin for Robot: {origin_for_robot}\n")
         file.write(f"Origin: {origin}\n")
-        file.write(f"Ends 1: {end1}\n")
-        file.write(f"Ends 2: {end2}\n")
-        file.write(f"Length 1: {length1}\n")
-        file.write(f"Length 2: {length2}\n")    
+        #file.write(f"Ends 1: {end1}\n")
+        #file.write(f"Ends 2: {end2}\n")
+        #file.write(f"Length 1: {length1}\n")
+        #file.write(f"Length 2: {length2}\n")    
         file.write(f"Angle 1: {angle1}\n")
         file.write(f"Angle 2: {angle2}\n")
+        file.write(f"Rotational Vector in Rad: {rot_vec_rounded}\n")
 
     # Convert origin to integer
     origin = (int(origin[0]), int(origin[1]))
