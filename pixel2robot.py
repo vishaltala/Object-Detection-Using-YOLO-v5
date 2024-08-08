@@ -32,4 +32,4 @@ def pixel2robot(cordx, cordy, nr):
     y_robot = result[1, 0]
     return x_robot, y_robot
 
-x, y = pixel2robot(1538, 909, 15)
+x, y = pixel2robot(1754, 857, 15)

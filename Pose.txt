@@ -1,13 +1,16 @@
 Main Top Position (-X): 
 -0.37221, -0.01232, 0.55941, 2.944, -1.163, 0.023
 
+Intermediate Position:
+0, 0.4, 0.25,
+
 Absatz für Camera = 84mm
 Second Photo Click from Z = 500mm
 Abstell Winkel: 2.221, 2.221, 0
 
 Cylinder:
-Z = 53 mm
-Z for Release = 60 mm
+Z = 0.053 m
+Z for Release = 0.055 m
 
 Marker:
 Z = 22 mm
