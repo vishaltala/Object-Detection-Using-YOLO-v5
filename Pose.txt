@@ -1,14 +1,16 @@
 Main Top Position (-X): 
 -0.37221, -0.01232, 0.55941, 2.944, -1.163, 0.023
 
+Absatz für Camera = 84mm
+Second Photo Click from Z = 500mm
+Abstell Winkel: 2.221, 2.221, 0
 
-Z for Cylinder: 53 mm | Absatz for camera +84 mm  |  Z = 500mm  | Rx=Ry=2.221 Rad, Rz = 0 | Z for Release = 60 mm
-Z for Marker: 25.5 mm
+Cylinder:
+Z = 53 mm
+Z for Release = 60 mm
+
 Z for Marker: 22 mm
 
-Camera Position:
-Rz: -0.007 rad
-Wrist 3: -263.53°
 
 
 
