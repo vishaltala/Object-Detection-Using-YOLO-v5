@@ -14,8 +14,8 @@ Z = 22 mm
 Z for Release = 30 mm
 
 Box:
-Z = 22 mm
-Z for Release = 30 mm
+Z = 30 mm
+Z for Release = 37 mm
 
 
 
