@@ -11,8 +11,11 @@ def draw_arrows(image, origin, length1, angle1, length2, angle2):
     # Calculate the end points for each arrow
     end1 = (int(origin[0] + length1 * np.cos(angle1_rad)), int(origin[1] - length1 * np.sin(angle1_rad)))
     end2 = (int(origin[0] + length2 * np.cos(angle2_rad)), int(origin[1] - length2 * np.sin(angle2_rad)))
+
+    origin_for_robot = (int((origin[0]*2560)/1920), int((origin[1]*1472)/1080))
     
     with open("txt_file/direction.txt", "w") as file:
+        file.write(f"Origin for Robot: {origin_for_robot}\n")
         file.write(f"Origin: {origin}\n")
         file.write(f"Ends 1: {end1}\n")
         file.write(f"Ends 2: {end2}\n")
