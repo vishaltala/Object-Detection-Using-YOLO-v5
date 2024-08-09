@@ -30,14 +30,16 @@ def draw_arrows(image, origin, length1, angle1, length2, angle2):
     
     with open("txt_file/direction.txt", "w") as file:
         file.write(f"Origin for Robot: {origin_for_robot}\n")
-        file.write(f"Origin: {origin}\n")
+        #file.write(f"Origin: {origin}\n")
         #file.write(f"Ends 1: {end1}\n")
         #file.write(f"Ends 2: {end2}\n")
         #file.write(f"Length 1: {length1}\n")
         #file.write(f"Length 2: {length2}\n")    
         file.write(f"Angle 1: {angle1}\n")
         file.write(f"Angle 2: {angle2}\n")
-        file.write(f"Rotational Vector in Rad: {rot_vec_rounded}\n")
+    
+    with open("txt_file/robot_RPY.txt", "w") as file:
+        file.write(f"{rot_vec_rounded}")
 
     # Convert origin to integer
     origin = (int(origin[0]), int(origin[1]))

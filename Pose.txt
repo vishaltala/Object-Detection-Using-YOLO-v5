@@ -8,18 +8,17 @@ Absatz für Camera = 84mm
 Second Photo Click from Z = 500mm
 Abstell Winkel: 2.221, 2.221, 0
 
-Cylinder:
-Z = 0.053 m
-Z for Release = 0.055 m
+If it is 0 then define the given variable as global variable
+z_pick = 0.053
+x_place, y_place, z_place = 0.366, -0.146, 0.067
 
-Marker:
-Z = 22 mm
-Z for Release = 30 mm
+If it is 1 then define the given variable as global variable
+z_pick = 0.030
+x_place, y_place, z_place = 0.366, -0.008, 0.048
 
-Box:
-Z = 30 mm
-Z for Release = 37 mm
-
+If it is 2 then define the given variable as global variable
+z_pick = 0.022
+x_place, y_place, z_place = 0.366, 0.121, 0.040
 
 
 
