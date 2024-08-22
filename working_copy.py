@@ -33,6 +33,28 @@ move_to_position()
 """
     return urscript
 
+def generate_urscript_movej_forward(x, y, z, rx, ry, rz, a=1, v=1):
+    urscript = f"""
+def move_to_position():
+    movej([{x}, {y}, {z}, {rx}, {ry}, {rz}], a={a}, v={v})
+    textmsg("Movement complete!")
+end
+
+move_to_position()
+"""
+    return urscript
+
+def generate_urscript_movel_forward(x, y, z, rx, ry, rz, a=1, v=1):
+    urscript = f"""
+def move_to_position():
+    movel([{x}, {y}, {z}, {rx}, {ry}, {rz}], a={a}, v={v})
+    textmsg("Movement complete!")
+end
+
+move_to_position()
+"""
+    return urscript
+
 def suction_on(robot_ip):
     urscript = f"""
 def start_suction():
@@ -72,6 +94,19 @@ def get_current_position(robot_ip):
     
     return [x, y, z, rx, ry, rz]
 
+def get_joint_angles(robot_ip):
+    PORT = 30003  # UR robots typically use port 30003 for primary interface
+    s = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    s.connect((robot_ip, PORT))
+    data = s.recv(2048)
+    s.close()
+    
+    # Extract the position data from the received packet correctly
+    joint_angles = struct.unpack('!6d', data[252:300])
+    base, shoulder, elbow, wrist1, wrist2, wrist3 = joint_angles
+
+    return [base, shoulder, elbow, wrist1, wrist2, wrist3]
+
 def has_reached_position(current_pos, target_pos, threshold=0.005):
     # Compare only the x, y, z coordinates
     for current, target in zip(current_pos[:3], target_pos[:3]):
@@ -80,28 +115,16 @@ def has_reached_position(current_pos, target_pos, threshold=0.005):
     return True
 
 def move_to_main_position(robot_ip):
-    main_position = [-0.37221, -0.01232, 0.55941, 2.944, -1.163, 0.023]
-    script = generate_urscript_movej(*main_position)
+    main_position = [-0.2553, -1.6563, 0.9641, -0.8604, -1.5900, 2.0661]
+    script = generate_urscript_movej_forward(*main_position)
     send_urscript(script, robot_ip)
-    
-    # Wait until the robot reaches the main position
+
+     # Wait until the robot reaches the position
     while True:
-        current_position = get_current_position(robot_ip)
+        current_position = get_joint_angles(robot_ip)
         if has_reached_position(current_position, main_position):
             break
-        time.sleep(0.1)  # Polling interval, adjust as needed
-
-def detect_object():
-    subprocess.run(["python", "detection.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-def convert_pixel_to_robot():
-    subprocess.run(["python", "pixel2robot.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-def pca_calculation():
-    subprocess.run(["python", "pca.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-
-def direction_object():
-    subprocess.run(["python", "direction.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+        time.sleep(0.1)
 
 x_robot = None
 y_robot = None
@@ -149,14 +172,14 @@ def pick_the_object(robot_ip):
     time.sleep(1)
 
 def intermediate_position(robot_ip):
-    pick_position = [0, 0.4, 0.25, 2.221, 2.221, 0]
-    script = generate_urscript_movel(*pick_position)
+    intermediate_position = [-1.8497, -1.8064, 1.9345, -1.6989, -1.5687, -1.8500]
+    script = generate_urscript_movej_forward(*intermediate_position)
     send_urscript(script, robot_ip)
 
-    # Wait until the robot reaches the pick position
+     # Wait until the robot reaches the position
     while True:
-        current_position = get_current_position(robot_ip)
-        if has_reached_position(current_position, pick_position):
+        current_position = get_joint_angles(robot_ip)
+        if has_reached_position(current_position, intermediate_position):
             break
         time.sleep(0.1)
 
@@ -171,6 +194,30 @@ def final_position(robot_ip):
         if has_reached_position(current_position, final_position):
             break
         time.sleep(0.1)
+
+def detect_object():
+    subprocess.run(["python", "detection.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def convert_pixel_to_robot():
+    subprocess.run(["python", "pixel2robot.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def pca_calculation():
+    subprocess.run(["python", "pca.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def direction_object():
+    subprocess.run(["python", "direction.py"], stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+
+def delet_txt_file():
+    directory = 'txt_file'
+    # Loop through each file in the directory
+    for filename in os.listdir(directory):
+        # Check if the file ends with .txt
+        if filename.endswith('.txt'):
+            file_path = os.path.join(directory, filename)
+            # Open the file in write mode to erase its contents
+            with open(file_path, 'w') as file:
+                file.write('')  # This will erase the file contents
+
 
 # Robot IP address
 robot_ip = '192.168.0.118'
@@ -228,13 +275,4 @@ while True:
     move_to_main_position(robot_ip)
 
     # Erase all previous data
-    # Specify the directory containing your .txt files
-    directory = 'txt_file'
-    # Loop through each file in the directory
-    for filename in os.listdir(directory):
-        # Check if the file ends with .txt
-        if filename.endswith('.txt'):
-            file_path = os.path.join(directory, filename)
-            # Open the file in write mode to erase its contents
-            with open(file_path, 'w') as file:
-                file.write('')  # This will erase the file contents
+    delet_txt_file()
