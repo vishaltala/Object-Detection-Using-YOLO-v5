@@ -171,6 +171,29 @@ def pick_the_object(robot_ip):
         time.sleep(0.1)
     time.sleep(1)
 
+def pick_up_object(robot_ip):
+    file_path = 'txt_file/robot_RPY.txt'
+
+    # Open and read the file
+    with open(file_path, 'r') as file:
+        content = file.read().strip()
+
+    # Parse the content
+    values = list(map(float, content.strip('[]').split()))
+    rx, ry = values[0], values[1]
+
+    pick_up_position = [x_robot, y_robot, 0.2, rx, ry, 0.0]
+    script = generate_urscript_movel(*pick_up_position)
+    send_urscript(script, robot_ip)
+
+    # Wait until the robot reaches the pick position
+    while True:
+        current_position = get_current_position(robot_ip)
+        if has_reached_position(current_position, pick_up_position):
+            break
+        time.sleep(0.1)
+    time.sleep(1)
+
 def intermediate_position(robot_ip):
     intermediate_position = [-1.8497, -1.8064, 1.9345, -1.6989, -1.5687, -1.8500]
     script = generate_urscript_movej_forward(*intermediate_position)
@@ -267,6 +290,7 @@ while True:
     pick_the_object(robot_ip)
     suction_on(robot_ip)
     time.sleep(3)
+    pick_up_object(robot_ip)
     intermediate_position(robot_ip)
     final_position(robot_ip)
     suction_off(robot_ip)
