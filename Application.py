@@ -243,7 +243,7 @@ def delet_txt_file():
 
 
 # Robot IP address
-robot_ip = '192.168.0.118'
+robot_ip = '10.84.59.207'
 
 # Execute the workflow
 

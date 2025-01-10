@@ -5,7 +5,9 @@ import time
 
 def take_photo_and_run_detection(camera_index=0, save_directory='photos', detection_script='yolov5/detect.py', weights='yolov5/my_model.pt'):
     # Initialize the camera
-    cap = cv2.VideoCapture(camera_index)
+    cap = cv2.VideoCapture(camera_index)#, cv2.CAP_DSHOW)
+    #cap.set(cv2.CAP_PROP_FRAME_HEIGHT, 1920)
+    #cap.set(cv2.CAP_PROP_FRAME_WIDTH, 1080)
     if not cap.isOpened():
         print("Error: Unable to open camera")
         return
@@ -80,6 +82,7 @@ def calculate_origin(file_path):
         x = (numbers[1] + numbers[3]) / 2
         y = (numbers[2] + numbers[4]) / 2
 
+        print(x, y)
         return (x, y)
 
     except Exception as e:
@@ -90,6 +93,7 @@ def convert_origin_for_robot(origin, image_resolution=(1920, 1080), robot_resolu
     try:
         x_robot = int((origin[0] * robot_resolution[0]) / image_resolution[0])
         y_robot = int((origin[1] * robot_resolution[1]) / image_resolution[1])
+        print(x_robot, y_robot)
         return (x_robot, y_robot)
     except Exception as e:
         print(f"Error converting origin for robot: {e}")
